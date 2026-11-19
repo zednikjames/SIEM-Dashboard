@@ -8,7 +8,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 # Signs the session cookie; set SECRET_KEY in the environment for real use
-app.secret_key = os.environ.get("SECRET_KEY", "dev-only-change-me")
+app.secret_key = os.environ["SECRET_KEY"]
 app.config.update(SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE="Lax")
 DB_PATH = "Database.db"
 
@@ -44,15 +44,17 @@ def api_login():
 
 
 
-@app.route("/logout")
-def logout():
-    session.clear()
-    return redirect("/login")
+
 
 
 @app.route("/login")
 def login():
     return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/login")
 
 @app.route("/")
 def index():
