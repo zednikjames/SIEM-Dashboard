@@ -1,0 +1,31 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+main h1{
+    text-align: center;
+}
+
+main p{
+    text-align: center;
+}
+
+.vertical-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200px;        /* Width of the bar */
+    height: 100vh;       /* 100% of the viewport (screen) height */
+    background-color: lightgrey;
+    display: flex;
+    flex-direction: column; /* Stacks links vertically going down */
+    padding-top: 20px;
+}
+
+.vertical-bar a {
+    color: black;
+    text-decoration: none;
+    padding: 15px 0;
+    text-align: center;
+}

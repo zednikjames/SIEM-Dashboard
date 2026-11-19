@@ -1,0 +1,14 @@
+body {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    height: 100vh;                /* ADD THIS - full screen height */
+    margin: 0;  
+}
+
+div.login-div {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 15px;
+}
