@@ -3,20 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='discover.css') }}">
     <title>Dashboard</title>
 </head>
     <body>
         <nav class="vertical-bar">
-            <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+            
             <a href="{{ url_for('index') }}">Home</a>
             <a href="{{ url_for('dashboard') }}">Dashboard</a>
             <a href="{{ url_for('discover') }}">Discover</a>
             <a href="{{ url_for('logout') }}">Logout</a>
         </nav>
         <main>
-            <h1>Dashboard</h1>
-            <p>Welcome to your discovery</p>
+            <input type="text" id="query" placeholder="Enter a search">
+            <button id="submit-search">Search</button>
+            <div class="log-viewer-window">
+                <pre id="log-output" class="logviewer"></pre>
+            </div>
+            
+            <button id="refresh">Refresh</button>
         </main>
+        
+        <script src="{{ url_for('static', filename='js/discover.js') }}"></script>
     </body>
 </html>

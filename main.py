@@ -1,8 +1,7 @@
 import sqlite3
-
 import os
 
-from flask import Flask, jsonify, redirect, render_template, request, session
+from flask import Flask, jsonify, redirect, render_template, request, send_file, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
@@ -27,7 +26,7 @@ def init_db():
             ("admin", generate_password_hash("password")),
         )
 
-
+# API references
 @app.route("/api/login", methods=["POST"])
 def api_login():
     data = request.get_json(silent=True) or {}
@@ -42,11 +41,11 @@ def api_login():
         return jsonify(success=True)
     return jsonify(success=False, error="Invalid username or password"), 401
 
+@app.route("/api/discover/log", methods=["GET"])
+def log():
+    return send_file(r"C:\Users\james\OneDrive\Desktop\SIEM Dashboard\recvived-logs\log.txt", mimetype="text/plain")
 
-
-
-
-
+# Default routes
 @app.route("/login")
 def login():
     return render_template("login.html")
@@ -69,11 +68,6 @@ def dashboard():
 @app.route("/discover")
 def discover():
     return render_template("discover.html")
-
-
-
-    
-
 
 init_db()
 
