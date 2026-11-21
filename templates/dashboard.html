@@ -7,16 +7,36 @@
     <title>Dashboard</title>
 </head>
     <body>
-        <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+        <div class="horizontal-bar">
+            <a href="{{ url_for('settings') }}">
+                <img src="{{ url_for('static', filename='icons/setting.png') }}" alt="" class="horizontal-icons">
+            </a>
+            <a href="{{ url_for('logout') }}">
+                <img src="{{ url_for('static', filename='icons/logout.png') }}" alt="" class="horizontal-icons">
+            </a>
+        </div>
+
+
         <nav class="vertical-bar">
-            <a href="{{ url_for('index') }}">Home</a>
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>
-            <a href="{{ url_for('discover') }}">Discover</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
+            <a href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='icons/home.png') }}" alt="" class="nav-icon">
+                Home
+            </a>
+            
+            <a href="{{ url_for('dashboard') }}">
+                <img src="{{ url_for('static', filename='icons/dashboard.png') }}" alt="" class="nav-icon">
+                Dashboard
+            </a>
+            
+            <a href="{{ url_for('discover') }}">
+                <img src="{{ url_for('static', filename='icons/loupe.png') }}" alt="" class="nav-icon">
+                Discover
+            </a>
         </nav>
         <main>
             <h1>Dashboard</h1>
             <p>Welcome to your dashboard</p>
+            <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
         </main>
     </body>
 </html>

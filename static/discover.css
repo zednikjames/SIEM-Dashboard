@@ -1,8 +1,24 @@
+/*
+    Main
+*/
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin-left: 300px;
+    padding: auto;
+}
+
 body {
   margin: 0;
   font-family: Arial, sans-serif;
 }
 
+/*
+    Vertical Bar
+*/
 .vertical-bar {
     position: fixed;
     top: 0;
@@ -13,6 +29,7 @@ body {
     display: flex;
     flex-direction: column; /* Stacks links vertically going down */
     padding-top: 20px;
+    border-right: 1px solid black;
 }
 
 .vertical-bar a {
@@ -22,6 +39,15 @@ body {
     text-align: center;
 }
 
+.nav-icon {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+/*
+    Log Viewer Stuff
+*/
 div.log-viewer-window {
     display: flex;
     width: 50%;
@@ -48,12 +74,29 @@ div.log-viewer-window::-webkit-scrollbar-thumb:hover {
     
 }
 
-main {
+
+
+/*
+    Horizontal
+*/
+.horizontal-bar {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    margin-left: 300px;
-    padding: auto;
+    gap: 10px;
+    padding-right: 20px;
+    height: 100px;
+    width: auto;
+    background-color: lightgrey;
+    border-bottom: 1px solid black;
+}
+
+.horizontal-bar a:first-child {
+    margin-left: auto;
+    align-self: center;
+    margin-right: 20px;
+}
+
+.horizontal-icons {
+    height: 30px;
+    width: 30px;
 }

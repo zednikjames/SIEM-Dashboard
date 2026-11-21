@@ -1,17 +1,31 @@
+# Normal Imports
 import sqlite3
 import os
+import configparser
 
+# From Imports
+from pathlib import Path
 from flask import Flask, jsonify, redirect, render_template, request, send_file, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
-app = Flask(__name__)
+config = configparser.ConfigParser()
+config.read('server.ini')
+
+HOST = config.get("server", "host")
+PORT = config.get("server", "host_port")
+DB_PATH = "Database.db"
+project_root = Path(__file__).resolve().parent.parent
+
+# Main Application
+app = Flask(__name__, template_folder=str(project_root / "templates"), static_folder=str(project_root / "static"))
 # Signs the session cookie; set SECRET_KEY in the environment for real use
 app.secret_key = os.environ["SECRET_KEY"]
 app.config.update(SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE="Lax")
-DB_PATH = "Database.db"
 
 
+
+# Database Setup
 def get_db():
     return sqlite3.connect(DB_PATH)
 
@@ -45,6 +59,14 @@ def api_login():
 def log():
     return send_file(r"C:\Users\james\OneDrive\Desktop\SIEM Dashboard\recvived-logs\log.txt", mimetype="text/plain")
 
+@app.route("/api/discover/recieve", methods=['POST'])
+def recieve():
+    if "file" not in request.files:
+        return {"message": "No file provided"}, 400
+    file = request.files['file']
+    file.save(f"C:\\Users\\james\\OneDrive\\Desktop\\SIEM Dashboard\\Forwarded-Logs\\{file.filename}")
+    return jsonify(success=True)
+
 # Default routes
 @app.route("/login")
 def login():
@@ -57,19 +79,23 @@ def logout():
 
 @app.route("/")
 def index():
+    if "user" not in session:
+        return redirect("/login")
     return render_template("index.html")
 
 @app.route("/dashboard")
 def dashboard():
-    if "user" not in session:
-        return redirect("/login")
     return render_template("dashboard.html")
 
 @app.route("/discover")
 def discover():
     return render_template("discover.html")
 
+@app.route("/settings")
+def settings():
+    return render_template("settings.html")
+
 init_db()
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8889)
+    app.run(debug=True, host=HOST, port=int(PORT))

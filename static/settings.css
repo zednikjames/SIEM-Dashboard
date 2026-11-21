@@ -1,0 +1,72 @@
+/*
+    Main Body CSS
+*/
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+main h1{
+    text-align: center;
+}
+
+main p{
+    text-align: center;
+}
+
+
+/*
+    Vertical Bar CSS
+*/
+
+.vertical-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200px;        /* Width of the bar */
+    height: 100vh;       /* 100% of the viewport (screen) height */
+    background-color: lightgrey;
+    display: flex;
+    flex-direction: column; /* Stacks links vertically going down */
+    padding-top: 20px;
+    border-right: 1px solid black;
+}
+
+.vertical-bar a {
+    color: black;
+    text-decoration: none;
+    padding: 15px 0;
+    text-align: center;
+}
+
+.nav-icon {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+/*
+    Horizontal Bar CSS
+*/
+.horizontal-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-right: 20px;
+    height: 100px;
+    width: auto;
+    background-color: lightgrey;
+    border-bottom: 1px solid black;
+}
+
+.horizontal-bar a:first-child {
+    margin-left: auto;
+    align-self: center;
+    margin-right: 20px;
+}
+
+.horizontal-icons {
+    height: 30px;
+    width: 30px;
+}
