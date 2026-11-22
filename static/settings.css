@@ -7,14 +7,10 @@ body {
   font-family: Arial, sans-serif;
 }
 
-main h1{
-    text-align: center;
+main {
+    display: flex;
+    align-items: center;
 }
-
-main p{
-    text-align: center;
-}
-
 
 /*
     Vertical Bar CSS
@@ -69,4 +65,38 @@ main p{
 .horizontal-icons {
     height: 30px;
     width: 30px;
+}
+
+/* Generate Token CSS */
+.container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 50vh;
+    width: 100vh;
+    border: 1px solid black;
+    background-color: lightgray;
+    display: flex;
+    flex-direction: column;      /* Stack items vertically */
+    align-items: center;         /* Center items horizontally */
+    justify-content: flex-start; /* Start items from top */
+    padding-top: 20px;           /* Space from top of container */
+    gap: 20px;                   /* Space between items */
+}
+
+.main-settings {
+    display: flex;
+    flex-direction: row;        /* Side by side (horizontal) */
+    gap: 20px;                  /* Space between button and p */
+    justify-content: flex-start; /* Align to the left */
+    align-items: center;
+}
+
+#generated-token-value {
+    caret-color: transparent;
+    outline: transparent;
+    cursor: default;
+    user-select: auto;
+    width: 55vh;
 }

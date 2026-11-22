@@ -33,9 +33,20 @@
                 Discover
             </a>
         </nav>
+
         <main>
-            
+            <div class="container">
+                <div class="main-settings">
+                    <button id="generate-token-button">Generate Token</button>
+                    <input placeholder="Enter a Name" id="collector-name">
+                    <input type="text" id="generated-token-value" readonly>
+                </div>
+                <div class="main-settings2">
+                    <button>test</button>
+                </div>
+            </div>
         </main>
-        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/settings.js') }}"></script> 
     </body>
+
 </html>

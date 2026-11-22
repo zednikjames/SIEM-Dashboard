@@ -2,6 +2,7 @@
 import sqlite3
 import os
 import configparser
+import secrets
 
 # From Imports
 from pathlib import Path
@@ -22,8 +23,6 @@ app = Flask(__name__, template_folder=str(project_root / "templates"), static_fo
 # Signs the session cookie; set SECRET_KEY in the environment for real use
 app.secret_key = os.environ["SECRET_KEY"]
 app.config.update(SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE="Lax")
-
-
 
 # Database Setup
 def get_db():
@@ -55,7 +54,7 @@ def api_login():
         return jsonify(success=True)
     return jsonify(success=False, error="Invalid username or password"), 401
 
-@app.route("/api/discover/log", methods=["GET"])
+@app.route("/api/discover/log")
 def log():
     return send_file(r"C:\Users\james\OneDrive\Desktop\SIEM Dashboard\recvived-logs\log.txt", mimetype="text/plain")
 
@@ -66,6 +65,29 @@ def recieve():
     file = request.files['file']
     file.save(f"C:\\Users\\james\\OneDrive\\Desktop\\SIEM Dashboard\\Forwarded-Logs\\{file.filename}")
     return jsonify(success=True)
+
+@app.route("/api/generate_token", methods=['POST', 'GET'])
+def generate_token():
+    data = request.get_json() or {}
+    name = data.get("name")
+    
+    if not isinstance(name, str) or not name.strip():
+        return jsonify(error="Name must be a non-empty string"), 400
+
+    if config.has_option('generated_tokens', name):
+        return jsonify(error="Token name already exists"), 400
+
+    if len(name) > 50:
+        return jsonify(error="Name too long (max 50 characters)"), 400
+
+    token = secrets.token_urlsafe(32)
+
+    config.set('generated_tokens', name, token)
+
+    with open('server.ini', "w") as configfile:
+        config.write(configfile)
+
+    return jsonify({"generated_token": token})
 
 # Default routes
 @app.route("/login")
