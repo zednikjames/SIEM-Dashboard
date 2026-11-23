@@ -1,0 +1,149 @@
+/*
+    Body
+*/
+
+body {
+    background: #010F23;
+    margin: 0;
+    font-family: Inter, Arial, sans-serif;
+}
+
+/*
+    Top bar
+*/
+
+.top-bar {
+    display: flex;
+    position: relative;
+    background-color: #07172D;
+    height: 42px;
+    border-bottom: 1px solid #0B213E;
+    align-items: center;
+}
+
+.website-brand {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 167px;
+    height: 100%;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    padding: 0 12px;
+    border-right: 1px solid #0B213E;
+}
+
+#website-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #a9c7ef;
+}
+
+.environment {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 20px;
+    font-size: 12px;
+    border-right: 1px solid #0B213E;
+    padding-right: 8px;
+}
+
+.environment select {
+    background: transparent;
+    color: #d2e2f9;
+    border: 0;
+    font: inherit;
+    cursor: pointer;
+}
+
+.environment option {
+    background: #07172d;
+    color: #d2e2f9;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #13c98a;
+}
+
+.operational-status {
+    color: #13c98a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 20px;
+    font-size: 12px;
+    padding-right: 8px;
+}
+
+.search-area {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 1px solid #1B3658;
+    border-radius: 4px;
+}
+
+.search-bar {
+    width: 500px;
+    height: 25px;
+    box-sizing: border-box;
+    background-color: transparent;
+    border: transparent;
+    color: white;
+}
+
+.search-bar:focus {
+    border-color: transparent;
+    outline: 1px solid #217ff4;
+}
+
+#search-icon {
+    border-right: 1px solid #1B3658;
+}
+
+/*
+    Side bar
+*/
+
+.side-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 9px;
+    box-sizing: border-box;
+    background-color: #06172C;
+    width: 167px;
+    min-height: calc(100vh - 42px);
+    border-right: 1px solid #0B213E;
+}
+
+.side-bar a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 32px;
+    padding: 0 10px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    color: #a9c7ef;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.side-bar a img {
+    width: 20px;
+    height: 20px;
+}
+
+.side-bar a[aria-current="page"] {
+    background-color: #082853;
+    color: #a9d2ff;
+    font-weight: 600;
+}

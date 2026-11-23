@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+        <title>Sentinal SIEM | Login</title>
+    </head>
+    <body>
+        <div class="horizontal-bar">
+            <img src="{{ url_for('static', filename='icons/brand-shield.svg') }}" alt="Sentinel SIEM shield" width="32" height="32" id="sentinel-siem-icon">
+            <p id="sentinel-name">Sentinel SIEM</p>
+        </div>
+
+        <main class="login-area">
+            <div class="login-box">
+                <div class="login-brand">
+                    <img id="sentinel-login-siem-icon"
+                        src="{{ url_for('static', filename='icons/brand-shield.svg') }}"
+                        alt="">
+                    <span id="website-title">Sentinel <span class="brand-accent">SIEM</span></span>
+                </div>
+
+                <span id="workspace-login-text">Sign in to your workspace</span>
+
+                <form class="login-form" method="post" action="{{ url_for('login') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <label for="email"> EMAIL ADDRESS</label>
+                    <div class="input-box">
+                        <img src="{{ url_for('static', filename='icons/email.svg') }}" alt="">
+                        <input id="email" name="email" type="email"
+                            placeholder="you@company.com" autocomplete="username" required>
+                    </div>
+
+                    <label for="password">PASSWORD</label>
+                    <div class="input-box">
+                        <img src="{{ url_for('static', filename='icons/password.svg') }}" alt="">
+                        <input id="password" name="password" type="password"
+                            placeholder="Enter your password" autocomplete="current-password" required>
+                    </div>
+
+                    {% if error %}
+                        <p role="alert">{{ error }}</p>
+                    {% endif %}
+
+                    <button type="submit" id="login-button">Sign in</button>
+                </form>
+            </div>
+        </main>
+
+        <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+    </body>
+</html>

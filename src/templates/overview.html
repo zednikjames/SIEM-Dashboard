@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='overview.css') }}">
+    <title>Sentinel SIEM | Overview</title>
+</head>
+    <body>
+        <div class="top-bar">
+            <div class="website-brand">
+                <img src="{{ url_for('static', filename='icons/brand-shield.svg') }}" alt="Sentinel SIEM shield" width="32" height="32" id="sentinel-siem-icon">
+                <span id="website-name">Sentinel SIEM</span>
+            </div>
+
+            <div class="environment">
+                <span class="status-dot"></span>
+                <select aria-label="Environment">
+                    <option>Production</option>
+                    <option>Development</option>
+                </select>
+            </div>
+            <div class="operational-status">
+                <span class="operation">All systems operational</span>
+            </div>
+
+            <div class="search-area">
+                <img src="{{ url_for('static', filename='icons/search.svg') }}" alt="Search" width="25" height="25" id="search-icon">
+                <input class="search-bar" placeholder="Search logs, alerts, hosts, users...">
+            </div>
+
+            <div class="profile-area">
+                <img id="profile-pic" src="{{ url_for('static', filename='profile-pictures/default.png') }}" width="30" height="30">
+                <div class="name-and-role">
+                    <p id="fullname">default</p>
+                    <p id="role">default</p>
+                </div>
+            </div>
+
+        </div>
+
+        <nav class="side-bar">
+            <a href="{{ url_for('pages.overview_page') }}"
+                {% if request.endpoint == 'pages.overview_page' %}aria-current="page"{% endif %}>
+                <img src="{{ url_for('static', filename='icons/overview.svg') }}" alt="">
+                <span>Overview</span>
+            </a>
+
+            <a href="{{ url_for('pages.incidents_page') }}"
+                {% if request.endpoint == 'pages.incidents_page' %}aria-current="page"{% endif %}>
+                <img src="{{ url_for('static', filename='icons/incidents.svg') }}" alt="">
+                <span>Incidents</span>
+            </a>
+
+            <a href="{{ url_for('pages.alerts_page') }}"
+                {% if request.endpoint == 'pages.alerts_page' %}aria-current="page"{% endif %}>
+                <img src="{{ url_for('static', filename='icons/alerts.svg') }}" alt="">
+                <span>Alerts</span>
+            </a>
+
+            <a href="{{ url_for('pages.search_page') }}"
+                {% if request.endpoint == 'pages.search_page' %}aria-current="page"{% endif %}>
+                <img src="{{ url_for('static', filename='icons/search.svg') }}" alt="">
+                <span>Search</span>
+            </a>
+
+            <a href="{{ url_for('pages.assets_page') }}"
+                {% if request.endpoint == 'pages.assets_page' %}aria-current="page"{% endif %}>
+                <img src="{{ url_for('static', filename='icons/assets.svg') }}" alt="">
+                <span>Assets</span>
+            </a>
+
+            <a href="{{ url_for('pages.investigations_page') }}"
+                {% if request.endpoint == 'pages.investigations_page' %}aria-current="page"{% endif %}>
+                <img src="{{ url_for('static', filename='icons/investigations.svg') }}" alt="">
+                <span>Investigations</span>
+            </a>
+
+            <a href="{{ url_for('pages.reports_page') }}"
+                {% if request.endpoint == 'pages.reports_page' %}aria-current="page"{% endif %}>
+                <img src="{{ url_for('static', filename='icons/reports.svg') }}" alt="">
+                <span>Reports</span>
+            </a>
+
+            <a href="{{ url_for('pages.settings_page') }}"
+                {% if request.endpoint == 'pages.settings_page' %}aria-current="page"{% endif %}>
+                <img src="{{ url_for('static', filename='icons/settings.svg') }}" alt="">
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <script src="{{ url_for('static', filename='js/overview.js') }}"></script>
+    </body>
+</html>
