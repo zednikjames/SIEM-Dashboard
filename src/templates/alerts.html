@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='incidents.css') }}">
-    <title>Sentinel SIEM | Incidents</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='overview.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='profile-menu.css') }}">
+    <title>Sentinel SIEM | Overview</title>
 </head>
     <body>
         <div class="top-bar">
@@ -29,13 +30,13 @@
                 <input class="search-bar" placeholder="Search logs, alerts, hosts, users...">
             </div>
 
-
+            {% include 'profile-menu.html' %}
 
         </div>
 
         <nav class="side-bar">
             <a href="{{ url_for('pages.overview_page') }}"
-                {% if request.endpoint == 'overview' %}aria-current="page"{% endif %}>
+                {% if request.endpoint == 'pages.overview_page' %}aria-current="page"{% endif %}>
                 <img src="{{ url_for('static', filename='icons/overview.svg') }}" alt="">
                 <span>Overview</span>
             </a>
@@ -82,5 +83,6 @@
                 <span>Settings</span>
             </a>
         </nav>
+        <script src="{{ url_for('static', filename='js/overview.js') }}"></script>
     </body>
 </html>

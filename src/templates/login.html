@@ -39,11 +39,11 @@
                             placeholder="Enter your password" autocomplete="current-password" required>
                     </div>
 
-                    {% if error %}
-                        <p role="alert">{{ error }}</p>
-                    {% endif %}
-
                     <button type="submit" id="login-button">Sign in</button>
+
+                    {% if error %}
+                        <p class="login-error" role="alert">{{ error }}</p>
+                    {% endif %}
                 </form>
             </div>
         </main>

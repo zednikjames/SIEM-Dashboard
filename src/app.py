@@ -80,6 +80,11 @@ def login():
     session["user_email"] = email
     return redirect(url_for('pages.overview_page'))
 
+@app.route("/logout", methods=["POST"])
+def logout():
+    session.clear()
+    return redirect(url_for("index"))
+
 @app.route("/")
 def index():
     return render_template('login.html')

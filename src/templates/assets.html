@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='incidents.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='profile-menu.css') }}">
     <title>Sentinel SIEM | Incidents</title>
 </head>
     <body>
@@ -29,7 +30,7 @@
                 <input class="search-bar" placeholder="Search logs, alerts, hosts, users...">
             </div>
 
-
+            {% include 'profile-menu.html' %}
 
         </div>
 
@@ -82,5 +83,6 @@
                 <span>Settings</span>
             </a>
         </nav>
+        <script src="{{ url_for('static', filename='js/assets.js') }}"></script>
     </body>
 </html>

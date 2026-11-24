@@ -1,0 +1,18 @@
+<div class="profile-area">
+    <details class="profile-menu">
+        <summary aria-label="Account menu">
+            <img id="profile-pic" src="{{ url_for('static', filename='profile-pictures/default.png') }}" alt="" width="32" height="32">
+            <span class="name-and-role">
+                <span id="fullname">User</span>
+                <span id="role">Account</span>
+            </span>
+            <span class="profile-menu-arrow" aria-hidden="true"></span>
+        </summary>
+        <div class="profile-menu-items">
+            <form method="post" action="{{ url_for('logout') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit">Log out</button>
+            </form>
+        </div>
+    </details>
+</div>

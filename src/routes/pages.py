@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, redirect, url_for
+from flask import Blueprint, render_template, session, redirect, url_for, jsonify
 
 pages_bp = Blueprint("pages", __name__)
 
@@ -49,3 +49,42 @@ def settings_page():
     if "user_email" not in session:
         return redirect(url_for("index"))
     return render_template("settings.html")
+
+# Setting Pages
+
+@pages_bp.route("/settings/general")
+def general_settings():
+    if "user_email" not in session:
+        return redirect(url_for("index"))
+
+    return render_template("setting-pages/general-settings.html")
+
+@pages_bp.route("/settings/security")
+def security_settings():
+    if "user_email" not in session:
+        return redirect(url_for("index"))
+
+    return render_template("setting-pages/security-settings.html")
+
+@pages_bp.route("/settings/notifications")
+def notifications_settings():
+    if "user_email" not in session:
+        return redirect(url_for("index"))
+
+    return render_template("setting-pages/notifications-settings.html")
+
+@pages_bp.route("/settings/data-sources")
+def data_sources_settings():
+    if "user_email" not in session:
+        return redirect(url_for("index"))
+
+    return render_template("setting-pages/data-sources-settings.html")
+
+@pages_bp.route("/settings/administration")
+def administration_settings():
+    if "user_email" not in session:
+        return redirect(url_for("index"))
+    if session["user_email"] != 'admin@sentinel.com':
+        return jsonify(error="Insufficient permission!"), 403
+
+    return render_template("setting-pages/administration-settings.html")
