@@ -19,6 +19,7 @@ instance/
 
 # Python environments and generated files
 .venv/
+.venv-linux/
 venv/
 __pycache__/
 *.py[cod]

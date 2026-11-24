@@ -7,5 +7,6 @@
   "editor.suggestOnTriggerCharacters": true,
   "editor.acceptSuggestionOnEnter": "off",
   "editor.acceptSuggestionOnCommitCharacter": true,
-  "editor.inlineSuggest.enabled": false
+  "editor.inlineSuggest.enabled": false,
+  "python.terminal.useEnvFile": true
 }
