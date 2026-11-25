@@ -12,7 +12,11 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 24px;
     flex: 1;
+    min-width: 0;
+    padding: 24px 32px;
+    box-sizing: border-box;
 }
 
 /*
@@ -222,32 +226,30 @@ main {
     display: flex;
     flex-direction: column;
     align-self: center;
-    align-content: center;
-    width: 10vw;
+    flex: 0 0 220px;
+    width: 220px;
     height: 70vh;
+    box-sizing: border-box;
     background-color: #082853;
     border: 1px solid #0B213E;
     border-radius: 10px;
-    margin-right: 5px;
-    gap: 0px;
+    padding: 12px;
+    gap: 8px;
 }
 
 .settings-nav a {
     display: flex;
     align-items: center;
-    width: 90%;
-    height: 5%;
+    width: 100%;
     box-sizing: border-box;
     border-radius: 4px;
     color: #a9c7ef;
     text-decoration: none;
     font-size: 14px;
     font-weight: 600;
-    gap: 4px;
-    margin-top: 20px;
-    padding: 8px 16px;
+    gap: 10px;
+    padding: 12px 14px;
     border-left: 4px solid transparent;
-    margin-left: 10px;
 }
 
 .settings-nav a[aria-current="page"] {
@@ -259,10 +261,42 @@ main {
 .settings-page {
     display: flex;
     align-self: center;
-    width: 40vw;
+    flex: 1;
+    min-width: 0;
+    width: auto;
     height: 70vh;
+    box-sizing: border-box;
     background-color: #082853;
     border: 1px solid #0B213E;
     border-radius: 10px;
-    margin-left: 1vw;
+}
+
+@media (max-width: 900px) {
+    main {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 20px;
+    }
+
+    .settings-nav {
+        flex-direction: row;
+        align-self: stretch;
+        flex: 0 0 auto;
+        width: 100%;
+        height: auto;
+        overflow-x: auto;
+    }
+
+    .settings-nav a {
+        flex: 0 0 auto;
+        width: auto;
+        white-space: nowrap;
+    }
+
+    .settings-page {
+        align-self: stretch;
+        width: 100%;
+        min-height: 60vh;
+        height: auto;
+    }
 }

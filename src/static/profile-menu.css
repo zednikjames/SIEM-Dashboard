@@ -1,3 +1,19 @@
+.profile-area {
+    position: relative;
+    border-left: 0;
+}
+
+.profile-area::before {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 1px;
+    height: 32px;
+    background-color: #1b3658;
+    content: "";
+    transform: translateY(-50%);
+}
+
 .profile-area .profile-menu {
     position: relative;
 }
