@@ -90,6 +90,10 @@ def logout():
 def index():
     return render_template('login.html')
 
+@app.route("/favicon.ico")
+def favicon():
+    return app.send_static_file("favicon.ico")
+
 init_db()
 setup_default_admin()
 
