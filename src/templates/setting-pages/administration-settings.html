@@ -105,26 +105,26 @@
 
 
                 <div class="settings-page">
-                    <details class="user-creation-form">
+                    <details class="user-creation-form create-user-section">
                         <summary><span>Create user</span></summary>
                         
-                        <form method="post" action="{{ url_for('api.create_user') }}" enctype="multipart/form-data">
+                        <form method="post" action="{{ url_for('api.create_user') }}" enctype="multipart/form-data" id="create-user-form">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <div class="email-row">
-                                <label for="email">Email Address</label>
-                                <input type="email" id="email" placeholder="Enter an company address" name="email">
+                            <div class="form-row">
+                                <label for="create-email">Email Address</label>
+                                <input type="email" id="create-email" placeholder="Enter an company address" name="email">
                             </div>
-                            <div class="password-row">
-                                <label for="password">Password</label>
-                                <input type="password" id="password" placeholder="Enter a password" name="password">
+                            <div class="form-row">
+                                <label for="create-password">Password</label>
+                                <input type="password" id="create-password" placeholder="Enter a password" name="password">
                             </div>
-                            <div class="name-row">
-                                <label for="name">Full Name</label>
-                                <input type="text" id="name" placeholder="Enter your full name" name="name">
+                            <div class="form-row">
+                                <label for="create-name">Full Name</label>
+                                <input type="text" id="create-name" placeholder="Enter your full name" name="name">
                             </div>
-                            <div class="role-row">
-                                <label for="role">Role</label>
-                                <input type="text" id="role" placeholder="Enter your given role" name="role">
+                            <div class="form-row">
+                                <label for="create-role">Role</label>
+                                <input type="text" id="create-role" placeholder="Enter your given role" name="role">
                             </div>
                             
                             <div class="form-row">
@@ -132,11 +132,68 @@
                             </div>
                         </form>
                     </details>
+
+                    <details class="user-creation-form modify-user-section">
+                        <summary><span>Modify existing user</span></summary>
+                        
+                        <form method="post" action="{{ url_for('api.modify_user') }}" enctype="multipart/form-data" id="modify-user-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <div class="form-row">
+                                <label for="existing-email">Email Address</label>
+                                <input type="email" id="existing-email" placeholder="Enter an existing company address" name="email">
+                            </div>
+                            <div class="form-row">
+                                <label for="modify-password">Password</label>
+                                <input type="password" id="modify-password" placeholder="Enter a new password" name="password">
+                            </div>
+                            <div class="form-row">
+                                <label for="modify-status">Status</label>
+                                <input type="text" id="modify-status" placeholder="Enter the current status of this user (True or False)" name="status">
+                            </div>
+                            <div class="form-row">
+                                <label for="modify-role">Role</label>
+                                <input type="text" id="modify-role" placeholder="(optional) Enter your new given role" name="role">
+                            </div>
+                            
+                            <div class="form-row">
+                                <button type="submit">Modify user</button>
+                            </div>
+                        </form>
+                    </details>
+                    <details class="user-creation-form user-list">
+                        <summary><span>User List</span></summary>
+                        
+                        <table>
+                            <caption hidden>User List</caption>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="user-list-body">
+                                <!-- JavaScript adds user rows here -->
+                                
+                            </tbody>
+                        </table>
+                    </details>
                 </div>
 
-
+                </div>
             </main>
         </div>
+        <div class="notification" id="admin-notification" hidden>
+            <div class="notification-content">
+                <strong id="notification-title"></strong>
+                <p id="notification-message"></p>
+            </div>
+            <button type="button" class="notification-close" aria-label="Dismiss notification">&times;</button>
+        </div>
         <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/user-list.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/administration-notifications.js') }}"></script>
     </body>
 </html>

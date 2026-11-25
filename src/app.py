@@ -35,6 +35,7 @@ def init_db():
                 password_hash TEXT NOT NULL,
                 full_name TEXT NOT NULL,
                 role TEXT NOT NULL,
+                active NOT NULL DEFAULT 1 CHECK (active IN (0, 1)),
                 profile_picture TEXT
             )
         """)
@@ -53,9 +54,9 @@ def setup_default_admin():
             password_hash = generate_password_hash(password)
 
             con.execute(
-                "INSERT INTO login (email, password_hash, full_name, role, profile_picture) VALUES (?, ?, ?, ?, ?) "
+                "INSERT INTO login (email, password_hash, full_name, role, active, profile_picture) VALUES (?, ?, ?, ?, ?, ?) "
                 "ON CONFLICT(email) DO NOTHING",
-                (email, password_hash, "James Zednik", "Administrator", "administrator.png"),
+                (email, password_hash, "James Zednik", "Administrator", True, "administrator.png"),
             )
 
 
