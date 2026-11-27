@@ -90,7 +90,7 @@ def setup_default_admin():
             con.execute(
                 "INSERT INTO login (email, password_hash, full_name, role, active, profile_picture) VALUES (?, ?, ?, ?, ?, ?) "
                 "ON CONFLICT(email) DO NOTHING",
-                (email, password_hash, "James Zednik", "Administrator", True, "administrator.png"),
+                (email, password_hash, "Admin", "Administrator", True, "administrator.png"),
             )
             
 # Main Code
