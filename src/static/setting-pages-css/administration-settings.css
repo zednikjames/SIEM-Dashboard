@@ -359,20 +359,70 @@ main {
 
 /* User list */
 
-.user-list table {
-    width: 100%;
+.user-list-content {
     padding: 20px 16px;
     background-color: #061b35;
     border: 1px solid #1B3658;
     border-top: 0;
     border-radius: 0 0 6px 6px;
+    overflow-x: auto;
+}
+
+.user-list table {
+    width: 100%;
+    border: 1px solid #1b3658;
+    border-radius: 6px;
+    border-spacing: 0;
+    overflow: hidden;
 }
 
 .user-list th,
 .user-list td {
-    text-align: center;
+    padding: 14px 14px;
+    text-align: left;
+    border-bottom: 1px solid #1b3658;
 }
 
+.user-list th {
+    color: #a9c7ef;
+    background-color: #07172D;
+    font-size: 13px;
+}
+
+.user-list td {
+    color: #d2e2f9;
+    font-size: 14px;
+}
+
+.user-list tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.user-list tbody:hover {
+    background-color: #082853;
+}
+
+/* Audit log */
+.audit-log-content {
+    background-color: #061b35;
+    padding: 20px 16px;
+    border: 1px solid #1b3658;
+    border-top: 0;
+    border-radius: 0 0 6px 6px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.audit-event {
+    border: 1px solid #1b3658;
+    background-color: #061b35;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.audit-event p {
+    margin-left: 15px;
+}
 
 /* Notifications */
 

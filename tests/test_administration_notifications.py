@@ -15,7 +15,8 @@ from werkzeug.security import check_password_hash
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
-with patch.dict(os.environ, {"DATABASE_PATH": "unused.db", "SECRET_KEY": "test", "PORT": "5000"}):
+with patch.dict(os.environ, {"USER_DATABASE_PATH": "unused.db", "AUDIT_DATABASE_PATH": "unused-audit.db",
+                            "ARCHIVE_DATABASE_PATH": "unused-archive.db", "SECRET_KEY": "test", "PORT": "5000"}):
     from routes import api
     from routes.pages import pages_bp
 
@@ -26,9 +27,13 @@ class AdministrationNotificationsTest(unittest.TestCase):
         self.addCleanup(self.directory.cleanup)
         database = Path(self.directory.name) / "test.db"
         self.database = database
-        database_patch = patch.object(api, "DATABASE_PATH", database)
+        database_patch = patch.object(api, "USER_DATABASE_PATH", database)
         database_patch.start()
         self.addCleanup(database_patch.stop)
+        self.audit_database = Path(self.directory.name) / "audit.db"
+        audit_patch = patch.object(api, "AUDIT_DATABASE_PATH", self.audit_database)
+        audit_patch.start()
+        self.addCleanup(audit_patch.stop)
         with closing(sqlite3.connect(database)) as con, con:
             con.execute(
                 "CREATE TABLE login (email TEXT PRIMARY KEY, password_hash TEXT NOT NULL, "
@@ -39,6 +44,12 @@ class AdministrationNotificationsTest(unittest.TestCase):
                 "INSERT INTO login (email, password_hash, full_name, role, profile_picture) "
                 "VALUES (?, ?, ?, ?, NULL)",
                 ("admin@sentinel.com", "hash", "Admin", "Administrator"),
+            )
+        with closing(sqlite3.connect(self.audit_database)) as con, con:
+            con.execute(
+                "CREATE TABLE main_log (id TEXT NOT NULL PRIMARY KEY, timestamp TEXT NOT NULL, "
+                "actor TEXT NOT NULL, action TEXT NOT NULL, target TEXT, "
+                "result INTEGER NOT NULL CHECK (result IN (0, 1)), details TEXT)"
             )
         self.app = Flask(
             __name__,
@@ -71,6 +82,38 @@ class AdministrationNotificationsTest(unittest.TestCase):
         response = self.client.post("/api/create_user", data=data, headers={"Accept": "application/json"})
         self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["error"], "User already exists")
+        with closing(sqlite3.connect(self.audit_database)) as con:
+            events = con.execute(
+                "SELECT actor, action, target, result, details FROM main_log ORDER BY rowid"
+            ).fetchall()
+        self.assertEqual(events, [
+            ("admin@sentinel.com", "user.created", "new@example.com", 1, "User has been created"),
+            ("admin@sentinel.com", "user.created", "new@example.com", 0, "User already exists"),
+        ])
+
+    def test_audit_failure_rolls_back_user_creation(self):
+        data = {"csrf_token": self.token, "email": "new@example.com",
+                "password": "test-password", "name": "New User", "role": "Analyst"}
+        original_log = api.write_user_creation_log
+        def fail_success_log(con, actor, target, result, details):
+            if result:
+                raise sqlite3.OperationalError("test failure")
+            return original_log(con, actor, target, result, details)
+
+        with patch.object(api, "write_user_creation_log", side_effect=fail_success_log):
+            with self.assertLogs(self.app.logger, level="ERROR"):
+                response = self.client.post("/api/create_user", data=data,
+                                            headers={"Accept": "application/json"})
+        self.assertEqual(response.status_code, 500)
+        with closing(sqlite3.connect(self.database)) as con:
+            self.assertIsNone(con.execute(
+                "SELECT email FROM login WHERE email = ?", ("new@example.com",)
+            ).fetchone())
+        with closing(sqlite3.connect(self.audit_database)) as con:
+            event = con.execute(
+                "SELECT result, details FROM main_log WHERE target = ?", ("new@example.com",)
+            ).fetchone()
+        self.assertEqual(event, (0, "Database error; outcome not confirmed"))
 
     def test_notification_forms_use_distinct_ids_and_endpoints(self):
         page = self.client.get("/settings/administration").get_data(as_text=True)

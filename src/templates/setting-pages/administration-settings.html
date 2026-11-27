@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='setting-pages-css/administration-settings.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='profile-menu.css') }}">
-    <title>Sentinel SIEM | Settings</title>
+    <title>AegisWatch | Settings</title>
 </head>
     <body>
         <div class="top-bar">
             <div class="website-brand">
-                <img src="{{ url_for('static', filename='icons/brand-shield.svg') }}" alt="Sentinel SIEM shield" width="32" height="32" id="sentinel-siem-icon">
-                <span id="website-name">Sentinel SIEM</span>
+                <img src="{{ url_for('static', filename='icons/brand-shield.svg') }}" alt="AegisWatch radar mark" width="32" height="32" id="sentinel-siem-icon">
+                <span id="website-name">AegisWatch</span>
             </div>
             <div class="environment">
                 <span class="status-dot"></span>
@@ -163,22 +163,33 @@
                     <details class="user-creation-form user-list">
                         <summary><span>User List</span></summary>
                         
-                        <table>
-                            <caption hidden>User List</caption>
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Role</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
+                        <div class="user-list-content">
+                            <table>
+                                <caption hidden>User List</caption>
+                                <thead class="row-headers">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
 
-                            <tbody id="user-list-body">
-                                <!-- JavaScript adds user rows here -->
-                                
-                            </tbody>
-                        </table>
+                                <tbody id="user-list-body">
+                                    <!-- JavaScript adds user rows here -->
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
+
+                    <details class="user-creation-form audit-log">
+                        <summary><span>Audit Log</span></summary>
+                        
+                        <div class="audit-log-content" id="audit-log-content">
+
+                        </div>
+                        
                     </details>
                 </div>
 
@@ -194,6 +205,7 @@
         </div>
         <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
         <script src="{{ url_for('static', filename='js/user-list.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/audit-log.js') }}"></script>
         <script src="{{ url_for('static', filename='js/administration-notifications.js') }}"></script>
     </body>
 </html>

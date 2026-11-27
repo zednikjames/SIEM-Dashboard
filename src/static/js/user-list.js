@@ -1,6 +1,9 @@
-(async () => {
+let userListRequest = 0;
+
+async function loadUsers() {
+    const requestId = ++userListRequest;
     try {
-        const response = await fetch('/api/return_users')
+        const response = await fetch('/api/return_users', { cache: 'no-store' });
 
         if (!response.ok) {
             console.error('Could not load users:', response.status);
@@ -8,7 +11,12 @@
         }
 
         const users = await response.json();
-        const tableBody = document.getElementById('user-list-body')
+        if (requestId !== userListRequest) {
+            return;
+        }
+
+        const tableBody = document.getElementById('user-list-body');
+        const rows = document.createDocumentFragment();
 
         for (const user of users) {
             const row = document.createElement('tr');
@@ -23,11 +31,14 @@
                 cell.textContent = value;
                 row.appendChild(cell);
             }
-            tableBody.appendChild(row);
+            rows.appendChild(row);
 
         }
+        tableBody.replaceChildren(rows);
     } catch (error) {
         console.error('Could not load users:', error);
     }
 
-})();
+}
+
+loadUsers();

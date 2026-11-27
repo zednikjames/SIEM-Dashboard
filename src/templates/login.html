@@ -4,12 +4,12 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
-        <title>Sentinal SIEM | Login</title>
+        <title>AegisWatch | Sign in</title>
     </head>
     <body>
         <div class="horizontal-bar">
-            <img src="{{ url_for('static', filename='icons/brand-shield.svg') }}" alt="Sentinel SIEM shield" width="32" height="32" id="sentinel-siem-icon">
-            <p id="sentinel-name">Sentinel SIEM</p>
+            <img src="{{ url_for('static', filename='icons/brand-shield.svg') }}" alt="AegisWatch radar mark" width="32" height="32" id="sentinel-siem-icon">
+            <p id="sentinel-name">AegisWatch</p>
         </div>
 
         <main class="login-area">
@@ -18,10 +18,11 @@
                     <img id="sentinel-login-siem-icon"
                         src="{{ url_for('static', filename='icons/brand-shield.svg') }}"
                         alt="">
-                    <span id="website-title">Sentinel <span class="brand-accent">SIEM</span></span>
+                    <span id="website-title">Aegis<span class="brand-accent">Watch</span></span>
                 </div>
 
-                <span id="workspace-login-text">Sign in to your workspace</span>
+                <h1 id="workspace-login-text">Welcome back</h1>
+                <p class="login-subtitle">Sign in to your security workspace</p>
 
                 <form class="login-form" method="post" action="{{ url_for('login') }}">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">

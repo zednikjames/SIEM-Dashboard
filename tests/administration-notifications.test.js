@@ -34,10 +34,13 @@ function setup() {
         "notification-message": message,
     };
     let fetchHandler;
+    const refreshes = { users: 0, logs: 0 };
     const context = {
         document: { getElementById(id) { return elements[id]; } },
         FormData: class { constructor(form) { this.form = form; } },
         fetch: (...args) => fetchHandler(...args),
+        async loadUsers() { refreshes.users++; },
+        async loadAuditLogs() { refreshes.logs++; },
         console: { error() {} },
     };
     const script = fs.readFileSync(
@@ -46,7 +49,7 @@ function setup() {
     );
     vm.runInNewContext(script, context);
     return {
-        create, modify, close, notification, title, message,
+        create, modify, close, notification, title, message, refreshes,
         setFetch(handler) { fetchHandler = handler; },
     };
 }
@@ -88,6 +91,7 @@ test("both forms show action-specific success and failure notifications", async 
     }
     ui.close.click();
     assert.equal(ui.notification.hidden, true);
+    assert.deepEqual(ui.refreshes, { users: 4, logs: 4 });
 });
 
 test("unexpected responses and network errors do not report success", async () => {
@@ -102,4 +106,5 @@ test("unexpected responses and network errors do not report success", async () =
     assert.equal(ui.title.textContent, "Modify user failed");
     assert.equal(ui.message.textContent, "Could not contact the server. Please try again.");
     assert.equal(ui.modify.button.disabled, false);
+    assert.deepEqual(ui.refreshes, { users: 2, logs: 2 });
 });

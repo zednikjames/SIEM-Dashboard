@@ -2,19 +2,29 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf.csrf import CSRFProtect
+from datetime import datetime, timezone
+from contextlib import closing
 
-from config import DATABASE_PATH, SECRET_KEY, DEFAULT_PORT
+from config import USER_DATABASE_PATH, AUDIT_DATABASE_PATH, ARCHIVE_DATABASE_PATH, SECRET_KEY, DEFAULT_PORT
 from routes.api import api_bp
 from routes.pages import pages_bp
 
 # Regular imports
 import os
 import sqlite3
+import uuid
 
 
 # Variables
-database_path = DATABASE_PATH
-database_path.parent.mkdir(parents=True, exist_ok=True)
+
+user_database_path = USER_DATABASE_PATH
+user_database_path.parent.mkdir(parents=True, exist_ok=True)
+
+audit_database_path = AUDIT_DATABASE_PATH
+audit_database_path.parent.mkdir(parents=True, exist_ok=True)
+
+archive_database_path = ARCHIVE_DATABASE_PATH
+archive_database_path.parent.mkdir(parents=True, exist_ok=True)
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = SECRET_KEY
@@ -28,10 +38,10 @@ app.register_blueprint(api_bp)
 
 # Database setup
 def init_db():
-    with sqlite3.connect(database_path) as con:
+    with sqlite3.connect(user_database_path) as con:
         con.execute("""
             CREATE TABLE IF NOT EXISTS login (
-                email TEXT PRIMARY KEY,
+                email TEXT NOT NULL PRIMARY KEY,
                 password_hash TEXT NOT NULL,
                 full_name TEXT NOT NULL,
                 role TEXT NOT NULL,
@@ -40,10 +50,36 @@ def init_db():
             )
         """)
 
+    with sqlite3.connect(audit_database_path) as con:
+        con.execute("""
+            CREATE TABLE IF NOT EXISTS main_log (
+                id TEXT NOT NULL PRIMARY KEY,
+                timestamp TEXT NOT NULL,
+                actor TEXT NOT NULL,
+                action TEXT NOT NULL,
+                target TEXT,
+                result INTEGER NOT NULL CHECK (result IN (0, 1)),
+                details TEXT
+            )
+        """)
+
+        with sqlite3.connect(archive_database_path) as con:
+            con.execute("""
+            CREATE TABLE IF NOT EXISTS archive_log (
+                id TEXT NOT NULL PRIMARY KEY,
+                timestamp TEXT NOT NULL,
+                actor TEXT NOT NULL,
+                action TEXT NOT NULL,
+                target TEXT,
+                result INTEGER NOT NULL CHECK (result IN (0, 1)),
+                details TEXT
+            )
+        """)
+
 def setup_default_admin():
     email = "admin@sentinel.com"
 
-    with sqlite3.connect(database_path) as con:
+    with closing(sqlite3.connect(user_database_path)) as con, con:
         existing = con.execute(
             "SELECT 1 FROM login WHERE email = ?",
             (email,),
@@ -58,15 +94,14 @@ def setup_default_admin():
                 "ON CONFLICT(email) DO NOTHING",
                 (email, password_hash, "James Zednik", "Administrator", True, "administrator.png"),
             )
-
-
+            
 # Main Code
 @app.route("/login", methods=["POST"])
 def login():
     email = request.form.get("email", "").strip()
     password = request.form.get("password", "")
 
-    with sqlite3.connect(database_path) as con:
+    with sqlite3.connect(user_database_path) as con:
         user = con.execute(
             "SELECT password_hash FROM login WHERE email = ?",
             (email,)
@@ -96,8 +131,6 @@ def favicon():
 
 init_db()
 setup_default_admin()
-
-
 
 if __name__ == "__main__":
     app.run(debug=True, port=int(DEFAULT_PORT), ssl_context=("localhost-cert.pem", "localhost-key.pem"))

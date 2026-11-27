@@ -1,3 +1,20 @@
+.website-brand #website-name {
+    display: inline-block;
+    color: #e7f2ff;
+    font-size: 15px;
+    font-weight: 750;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    background: linear-gradient(100deg, #e8f5ff 5%, #a9d2ff 55%, #63b2ff 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.website-brand #sentinel-siem-icon {
+    filter: drop-shadow(0 0 6px rgba(33, 127, 244, 0.45));
+}
+
 .profile-area {
     position: relative;
     border-left: 0;

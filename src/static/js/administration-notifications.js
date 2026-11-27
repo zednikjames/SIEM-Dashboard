@@ -42,6 +42,7 @@ createUserForm.addEventListener("submit", async (event) => {
         console.error("Could not submit the create-user form:", error);
         showNotification("Could not contact the server. Please try again.", true, "Create user");
     } finally {
+        await Promise.all([loadUsers(), loadAuditLogs()]);
         button.disabled = false;
     }
 });
@@ -76,6 +77,7 @@ modifyUserForm.addEventListener("submit", async (event) => {
         console.error("Could not submit the modify-user form:", error);
         showNotification("Could not contact the server. Please try again.", true, "Modify user");
     } finally {
+        await Promise.all([loadUsers(), loadAuditLogs()]);
         button.disabled = false;
     }
 });
