@@ -12,8 +12,6 @@ from routes.pages import pages_bp
 # Regular imports
 import os
 import sqlite3
-import uuid
-
 
 # Variables
 
