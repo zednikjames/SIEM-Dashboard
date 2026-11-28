@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, session, redirect, url_for, jsonify
+from flask import Blueprint, render_template, session, redirect, url_for, abort
+from routes.api import is_system_administrator
 
 pages_bp = Blueprint("pages", __name__)
 
@@ -84,7 +85,7 @@ def data_sources_settings():
 def administration_settings():
     if "user_email" not in session:
         return redirect(url_for("index"))
-    if session["user_email"] != 'admin@sentinel.com':
-        return jsonify(error="Insufficient permission!"), 403
+    if not is_system_administrator(session["user_email"]):
+        abort(403)
 
     return render_template("setting-pages/administration-settings.html")

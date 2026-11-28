@@ -105,6 +105,7 @@
 
 
                 <div class="settings-page">
+                    <!-- User Creation -->
                     <details class="user-creation-form create-user-section">
                         <summary><span>Create user</span></summary>
                         
@@ -123,8 +124,30 @@
                                 <input type="text" id="create-name" placeholder="Enter your full name" name="name">
                             </div>
                             <div class="form-row">
-                                <label for="create-role">Role</label>
-                                <input type="text" id="create-role" placeholder="Enter your given role" name="role">
+                                <label for="role">Enter a Role</label>
+                                <select name="roles" id="role-selection">
+                                    <option value="System Administrator">System Administrator</option>
+                                    <option value="SOC Manager \ Team Lead">SOC Manager \ Team Lead</option>
+                                    <option value="Tier 2 SOC Analyst">Tier 2 SOC Analyst</option>
+                                    <option value="Tier 1 SOC Analyst">Tier 1 SOC Analyst</option>
+                                    <option value="Incident Responder">Incident Responder</option>
+                                    <option value="Threat Hunter">Threat Hunter</option>
+                                    <option value="Read-Only User">Read-Only User</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <label for="permission-selection">Permissions</label>
+                                <div class="permission-selection">
+                                    <div class="permission-row">
+                                        <label for="alerts-view">View alerts</label>
+                                        <input id="alerts-view" type="checkbox" name="permissions" value="alerts.view">
+                                    </div>
+
+                                    <div class="permission-row">
+                                        <label for="alerts-modify">Modify alerts</label>
+                                        <input id="alerts-modify" type="checkbox" name="permissions" value="alerts.modify">
+                                    </div>
+                                </div>
                             </div>
                             
                             <div class="form-row">
@@ -133,6 +156,7 @@
                         </form>
                     </details>
 
+                    <!-- User Modification -->
                     <details class="user-creation-form modify-user-section">
                         <summary><span>Modify existing user</span></summary>
                         
@@ -151,8 +175,17 @@
                                 <input type="text" id="modify-status" placeholder="Enter the current status of this user (True or False)" name="status">
                             </div>
                             <div class="form-row">
-                                <label for="modify-role">Role</label>
-                                <input type="text" id="modify-role" placeholder="(optional) Enter your new given role" name="role">
+                                <label for="roles">Enter a Role</label>
+                                <select name="roles" id="role-selection">
+                                    <option value="">Keep current role</option>
+                                    <option value="System Administrator">System Administrator</option>
+                                    <option value="SOC Manager \ Team Lead">SOC Manager \ Team Lead</option>
+                                    <option value="Tier 2 SOC Analyst">Tier 2 SOC Analyst</option>
+                                    <option value="Tier 1 SOC Analyst">Tier 1 SOC Analyst</option>
+                                    <option value="Incident Responder">Incident Responder</option>
+                                    <option value="Threat Hunter">Threat Hunter</option>
+                                    <option value="Read-Only User">Read-Only User</option>
+                                </select>
                             </div>
                             
                             <div class="form-row">
@@ -160,6 +193,8 @@
                             </div>
                         </form>
                     </details>
+
+                    <!-- User List -->
                     <details class="user-creation-form user-list">
                         <summary><span>User List</span></summary>
                         
@@ -183,6 +218,7 @@
                         </div>
                     </details>
 
+                    <!-- Audit Log -->
                     <details class="user-creation-form audit-log">
                         <summary><span>Audit Log</span></summary>
                         
@@ -191,8 +227,6 @@
                         </div>
                         
                     </details>
-                </div>
-
                 </div>
             </main>
         </div>

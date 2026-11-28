@@ -36,18 +36,22 @@ class AdministrationNotificationsTest(unittest.TestCase):
         self.addCleanup(audit_patch.stop)
         with closing(sqlite3.connect(database)) as con, con:
             con.execute(
-                "CREATE TABLE login (email TEXT PRIMARY KEY, password_hash TEXT NOT NULL, "
+                "CREATE TABLE login (user_id TEXT PRIMARY KEY, email TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, "
                 "full_name TEXT NOT NULL, role TEXT NOT NULL, "
                 "active NOT NULL DEFAULT 1 CHECK (active IN (0, 1)), profile_picture TEXT)"
             )
             con.execute(
-                "INSERT INTO login (email, password_hash, full_name, role, profile_picture) "
-                "VALUES (?, ?, ?, ?, NULL)",
-                ("admin@sentinel.com", "hash", "Admin", "Administrator"),
+                "CREATE TABLE permissions (user_id TEXT NOT NULL, permission_key TEXT NOT NULL, "
+                "PRIMARY KEY (user_id, permission_key), FOREIGN KEY (user_id) REFERENCES login(user_id))"
+            )
+            con.execute(
+                "INSERT INTO login (user_id, email, password_hash, full_name, role, profile_picture) "
+                "VALUES (?, ?, ?, ?, ?, NULL)",
+                ("admin-id", "admin@sentinel.com", "hash", "Admin", "System Administrator"),
             )
         with closing(sqlite3.connect(self.audit_database)) as con, con:
             con.execute(
-                "CREATE TABLE main_log (id TEXT NOT NULL PRIMARY KEY, timestamp TEXT NOT NULL, "
+                "CREATE TABLE main_log (id TEXT NOT NULL PRIMARY KEY, user_id TEXT, timestamp TEXT NOT NULL, "
                 "actor TEXT NOT NULL, action TEXT NOT NULL, target TEXT, "
                 "result INTEGER NOT NULL CHECK (result IN (0, 1)), details TEXT)"
             )
@@ -70,35 +74,40 @@ class AdministrationNotificationsTest(unittest.TestCase):
 
     def test_json_success_and_duplicate(self):
         data = {"csrf_token": self.token, "email": "new@example.com",
-                "password": "test-password", "name": "New User", "role": "Analyst"}
+                "password": "test-password", "name": "New User", "roles": r"SOC Manager \ Team Lead",
+                "permissions": ["alerts.view", "alerts.modify"]}
         response = self.client.post("/api/create_user", data=data, headers={"Accept": "application/json"})
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json["message"], "User has been created")
         with closing(sqlite3.connect(self.database)) as con:
-            role, active = con.execute(
-                "SELECT role, active FROM login WHERE email = ?", ("new@example.com",)
+            user_id, role, active = con.execute(
+                "SELECT user_id, role, active FROM login WHERE email = ?", ("new@example.com",)
             ).fetchone()
-        self.assertEqual((role, active), ("Analyst", 1))
+            permissions = con.execute(
+                "SELECT permission_key FROM permissions WHERE user_id = ? ORDER BY permission_key", (user_id,)
+            ).fetchall()
+        self.assertEqual((role, active), (r"SOC Manager \ Team Lead", 1))
+        self.assertEqual(permissions, [("alerts.modify",), ("alerts.view",)])
         response = self.client.post("/api/create_user", data=data, headers={"Accept": "application/json"})
         self.assertEqual(response.status_code, 409)
         self.assertEqual(response.json["error"], "User already exists")
         with closing(sqlite3.connect(self.audit_database)) as con:
             events = con.execute(
-                "SELECT actor, action, target, result, details FROM main_log ORDER BY rowid"
+                "SELECT user_id, actor, action, target, result, details FROM main_log ORDER BY rowid"
             ).fetchall()
         self.assertEqual(events, [
-            ("admin@sentinel.com", "user.created", "new@example.com", 1, "User has been created"),
-            ("admin@sentinel.com", "user.created", "new@example.com", 0, "User already exists"),
+            ("admin-id", "admin@sentinel.com", "user.created", "new@example.com", 1, "User has been created"),
+            ("admin-id", "admin@sentinel.com", "user.created", "new@example.com", 0, "User already exists"),
         ])
 
     def test_audit_failure_rolls_back_user_creation(self):
         data = {"csrf_token": self.token, "email": "new@example.com",
-                "password": "test-password", "name": "New User", "role": "Analyst"}
+                "password": "test-password", "name": "New User", "roles": "Tier 1 SOC Analyst"}
         original_log = api.write_user_creation_log
-        def fail_success_log(con, actor, target, result, details):
+        def fail_success_log(con, user_id, actor, target, result, details):
             if result:
                 raise sqlite3.OperationalError("test failure")
-            return original_log(con, actor, target, result, details)
+            return original_log(con, user_id, actor, target, result, details)
 
         with patch.object(api, "write_user_creation_log", side_effect=fail_success_log):
             with self.assertLogs(self.app.logger, level="ERROR"):
@@ -119,18 +128,24 @@ class AdministrationNotificationsTest(unittest.TestCase):
         page = self.client.get("/settings/administration").get_data(as_text=True)
         self.assertRegex(page, r'<form[^>]*action="/api/create_user"[^>]*id="create-user-form"')
         self.assertRegex(page, r'<form[^>]*action="/api/modify_user"[^>]*id="modify-user-form"')
+        modify_form = page.split('id="modify-user-form"', 1)[1].split("</form>", 1)[0]
+        self.assertRegex(modify_form, r'<select name="roles"[^>]*>\s*<option value="">Keep current role</option>')
+
+    def test_system_administration_can_list_users_and_logs(self):
+        self.assertEqual(self.client.get("/api/return_users").status_code, 200)
+        self.assertEqual(self.client.get("/api/return_logs").status_code, 200)
 
     def test_invalid_and_csrf_errors(self):
         response = self.client.post("/api/create_user", data={"csrf_token": self.token},
                                     headers={"Accept": "application/json"})
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json["error"], "Email cannot be empty!")
+        self.assertEqual(response.json["error"], "Email cannot be empty")
         self.assertEqual(self.client.post("/api/create_user", data={}).status_code, 400)
 
     def test_regular_form_still_redirects(self):
         response = self.client.post("/api/create_user", data={
             "csrf_token": self.token, "email": "other@example.com",
-            "password": "test-password", "name": "Other", "role": "Analyst",
+            "password": "test-password", "name": "Other", "roles": "Tier 1 SOC Analyst",
         })
         self.assertEqual(response.status_code, 303)
         self.assertEqual(response.headers["Location"], "/settings/administration")
@@ -138,7 +153,9 @@ class AdministrationNotificationsTest(unittest.TestCase):
     def test_non_administrator_cannot_create_user(self):
         with self.client.session_transaction() as session:
             session["user_email"] = "other@example.com"
-        response = self.client.post("/api/create_user", data={"csrf_token": self.token},
+        response = self.client.post("/api/create_user", data={
+            "csrf_token": self.token, "email": "new@example.com",
+            "password": "password", "name": "New User", "roles": "Tier 1 SOC Analyst"},
                                     headers={"Accept": "application/json"})
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json["error"], "Insufficient permission")
@@ -146,11 +163,11 @@ class AdministrationNotificationsTest(unittest.TestCase):
     def test_modify_user_updates_password_status_and_optional_role(self):
         with closing(sqlite3.connect(self.database)) as con, con:
             con.execute(
-                "INSERT INTO login (email, password_hash, full_name, role) VALUES (?, ?, ?, ?)",
-                ("user@example.com", "old-hash", "User", "Analyst"),
+                "INSERT INTO login (user_id, email, password_hash, full_name, role) VALUES (?, ?, ?, ?, ?)",
+                ("user-id", "user@example.com", "old-hash", "User", "Tier 1 SOC Analyst"),
             )
         data = {"csrf_token": self.token, "email": " user@example.com ",
-                "password": "new-password", "status": " False ", "role": "  "}
+                "password": "new-password", "status": " False ", "roles": "  "}
         response = self.client.post("/api/modify_user", data=data,
                                     headers={"Accept": "application/json"})
         self.assertEqual(response.status_code, 200)
@@ -161,20 +178,23 @@ class AdministrationNotificationsTest(unittest.TestCase):
                 ("user@example.com",),
             ).fetchone()
         self.assertTrue(check_password_hash(password_hash, "new-password"))
-        self.assertEqual((active, role), (0, "Analyst"))
+        self.assertEqual((active, role), (0, "Tier 1 SOC Analyst"))
 
-        data.update(status="true", role=" Administrator ")
+        data.update(status="true", roles=r" SOC Manager \ Team Lead ")
         response = self.client.post("/api/modify_user", data=data)
         self.assertEqual(response.status_code, 303)
         with closing(sqlite3.connect(self.database)) as con:
             active, role = con.execute(
                 "SELECT active, role FROM login WHERE email = ?", ("user@example.com",)
             ).fetchone()
-        self.assertEqual((active, role), (1, "Administrator"))
+        self.assertEqual((active, role), (1, r"SOC Manager \ Team Lead"))
+        with closing(sqlite3.connect(self.audit_database)) as con:
+            actors = con.execute("SELECT user_id FROM main_log WHERE action = 'user.modified'").fetchall()
+        self.assertEqual(actors, [("admin-id",), ("admin-id",)])
 
     def test_modify_user_rejects_bad_input_and_missing_user(self):
         data = {"csrf_token": self.token, "email": "missing@example.com",
-                "password": "password", "status": "maybe", "role": "Analyst"}
+                "password": "password", "status": "maybe", "roles": "Tier 1 SOC Analyst"}
         response = self.client.post("/api/modify_user", data=data)
         self.assertEqual(response.status_code, 400)
         data["password"] = ""
@@ -189,6 +209,15 @@ class AdministrationNotificationsTest(unittest.TestCase):
         with self.client.session_transaction() as session:
             session["user_email"] = "missing@example.com"
         self.assertEqual(self.client.post("/api/modify_user", data=data).status_code, 403)
+
+    def test_creation_database_failure_before_actor_lookup_returns_error(self):
+        data = {"csrf_token": self.token, "email": "new@example.com", "password": "password",
+                "name": "New User", "roles": "Tier 1 SOC Analyst"}
+        with patch.object(api.sqlite3, "connect", side_effect=sqlite3.OperationalError("test failure")):
+            with self.assertLogs(self.app.logger, level="ERROR"):
+                response = self.client.post("/api/create_user", data=data)
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.json["error"], "Could not create user")
 
 
 if __name__ == "__main__":

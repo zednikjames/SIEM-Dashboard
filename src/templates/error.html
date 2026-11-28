@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='error.css') }}">
+        <title>AegisWatch | {{ code }} {{ title }}</title>
+    </head>
+    <body>
+        <div class="horizontal-bar">
+            <img src="{{ url_for('static', filename='icons/brand-shield.svg') }}" alt="AegisWatch radar mark" width="32" height="32" id="sentinel-siem-icon">
+            <p id="sentinel-name">AegisWatch</p>
+        </div>
+
+        <main class="login-area">
+            <div class="login-box error-box">
+                <p class="error-code">{{ code }}</p>
+                <h1 class="error-title">{{ title }}</h1>
+                <p class="login-subtitle">{{ message }}</p>
+
+                <div class="error-actions">
+                    {% if session.get('user_email') %}
+                        <a class="error-link" href="{{ url_for('pages.overview_page') }}">Back to overview</a>
+                    {% else %}
+                        <a class="error-link" href="{{ url_for('index') }}">Go to sign in</a>
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+    </body>
+</html>

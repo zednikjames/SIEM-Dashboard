@@ -1,0 +1,35 @@
+.error-box {
+    text-align: center;
+}
+
+.error-code {
+    margin: 0;
+    font-size: 64px;
+    font-weight: 800;
+    line-height: 1;
+    color: #3f97ff;
+    text-shadow: 0 0 24px rgba(33, 127, 244, 0.45);
+}
+
+.error-title {
+    margin: 12px 0 8px;
+    font-size: 22px;
+}
+
+.error-actions {
+    margin-top: 28px;
+}
+
+.error-link {
+    display: inline-block;
+    padding: 10px 22px;
+    border-radius: 8px;
+    background: #217ff4;
+    color: #ffffff;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.error-link:hover {
+    background: #3f97ff;
+}

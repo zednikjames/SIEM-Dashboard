@@ -249,7 +249,6 @@ main {
 }
 
 /* Administration forms */
-
 .user-creation-form {
     color: #d2e2f9;
     box-sizing: border-box;
@@ -318,7 +317,7 @@ main {
     font-weight: 600;
 }
 
-.user-creation-form input:not([type="hidden"]),
+.user-creation-form input:not([type="hidden"]):not([type="checkbox"]),
 .user-creation-form select {
     width: 100%;
     min-width: 0;
@@ -423,6 +422,25 @@ main {
 .audit-event p {
     margin-left: 15px;
 }
+/* Permission Selection */
+.permission-selection {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid #1b3658;
+    border-radius: 5px;
+}
+
+.permission-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+}
+
 
 /* Notifications */
 

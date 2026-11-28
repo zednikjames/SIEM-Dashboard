@@ -1,5 +1,6 @@
 # From imports
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from werkzeug.exceptions import HTTPException
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf.csrf import CSRFProtect
 from datetime import datetime, timezone
@@ -12,6 +13,7 @@ from routes.pages import pages_bp
 # Regular imports
 import os
 import sqlite3
+import uuid
 
 # Variables
 
@@ -32,6 +34,27 @@ csrf = CSRFProtect(app)
 app.register_blueprint(pages_bp)
 app.register_blueprint(api_bp)
 
+ERROR_PAGES = {
+    400: ("Bad request", "The request could not be understood or its security token has expired. Refresh the page and try again."),
+    401: ("Sign in required", "You need to sign in to view this page."),
+    403: ("Access denied", "You don't have permission to view this page."),
+    404: ("Page not found", "The page you're looking for doesn't exist or has moved."),
+    405: ("Method not allowed", "This address doesn't support that kind of request."),
+    500: ("Something went wrong", "An unexpected error occurred. Please try again later."),
+}
+
+
+@app.errorhandler(HTTPException)
+def handle_http_error(error):
+    code = error.code or 500
+    wants_json = request.path.startswith("/api/") or request.accept_mimetypes.best == "application/json"
+    if wants_json or code not in ERROR_PAGES:
+        return jsonify(error=error.description), code
+
+    title, message = ERROR_PAGES[code]
+    return render_template("error.html", code=code, title=title, message=message), code
+
+
 
 
 # Database setup
@@ -39,7 +62,8 @@ def init_db():
     with sqlite3.connect(user_database_path) as con:
         con.execute("""
             CREATE TABLE IF NOT EXISTS login (
-                email TEXT NOT NULL PRIMARY KEY,
+                user_id TEXT NOT NULL PRIMARY KEY, 
+                email TEXT NOT NULL UNIQUE,
                 password_hash TEXT NOT NULL,
                 full_name TEXT NOT NULL,
                 role TEXT NOT NULL,
@@ -48,10 +72,20 @@ def init_db():
             )
         """)
 
+        con.execute("""
+        CREATE TABLE IF NOT EXISTS permissions (
+            user_id TEXT NOT NULL,
+            permission_key TEXT NOT NULL,
+            PRIMARY KEY (user_id, permission_key),
+            FOREIGN KEY (user_id) REFERENCES login(user_id) ON DELETE CASCADE
+        )
+        """)
+
     with sqlite3.connect(audit_database_path) as con:
         con.execute("""
             CREATE TABLE IF NOT EXISTS main_log (
                 id TEXT NOT NULL PRIMARY KEY,
+                user_id TEXT,
                 timestamp TEXT NOT NULL,
                 actor TEXT NOT NULL,
                 action TEXT NOT NULL,
@@ -65,6 +99,7 @@ def init_db():
             con.execute("""
             CREATE TABLE IF NOT EXISTS archive_log (
                 id TEXT NOT NULL PRIMARY KEY,
+                user_id TEXT,
                 timestamp TEXT NOT NULL,
                 actor TEXT NOT NULL,
                 action TEXT NOT NULL,
@@ -88,11 +123,16 @@ def setup_default_admin():
             password_hash = generate_password_hash(password)
 
             con.execute(
-                "INSERT INTO login (email, password_hash, full_name, role, active, profile_picture) VALUES (?, ?, ?, ?, ?, ?) "
+                "INSERT INTO login (user_id, email, password_hash, full_name, role, active, profile_picture) VALUES (?, ?, ?, ?, ?, ?, ?) "
                 "ON CONFLICT(email) DO NOTHING",
-                (email, password_hash, "Admin", "Administrator", True, "administrator.png"),
+                (str(uuid.uuid4()), email, password_hash, "Admin", "System Administrator", True, "administrator.png"),
             )
-            
+        else:
+            con.execute(
+                "UPDATE login SET role = ?, active = 1 WHERE email = ?",
+                ("System Administrator", email),
+            )
+
 # Main Code
 @app.route("/login", methods=["POST"])
 def login():
